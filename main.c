@@ -158,12 +158,32 @@ int main(void) {
     SDL_RenderClear(renderer);
 
     if (currentMode2D) {
+      /*
       int i;
       SDL_SetRenderDrawColor(renderer, 168, 70, 50, 255);
       for (i = 0; i < segmentsLength; ++i) {
 	Vector point1 = segments[i].point1;
 	Vector point2 = segments[i].point2;
 	SDL_RenderDrawLine(renderer, point1.x - position.x + WIDTH / 2, point1.y - position.y + HEIGHT / 2, point2.x - position.x + WIDTH / 2, point2.y - position.y + HEIGHT / 2);
+      }
+      */
+
+      SDL_SetRenderDrawColor(renderer, 0, 137, 255, 255);
+      {
+	SDL_Rect wall;
+	int row;
+	wall.w = wall.h = TILE_SIZE;
+	for (row = 0; row < ROWS; ++row) {
+	  int column;
+	  for (column = 0; column < COLUMNS; ++column) {
+	    if (tilemap[row][column] == WALL) {
+	      wall.x = column * TILE_SIZE;
+	      wall.y = row * TILE_SIZE;
+
+	      SDL_RenderFillRect(renderer, &wall);
+	    }
+	  }
+	}
       }
 
       {
