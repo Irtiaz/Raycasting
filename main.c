@@ -186,19 +186,27 @@ int main(void) {
       int rayCounter;
       int segmentCounter;
       float dTheta = FIELD_OF_VIEW / NUMBER_OF_RAYS_IN_VISION_CONE;
+      float shortestDistanceSquared;
 
       ray.startPoint = position;
 
       SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+      shortestDistanceSquared = -1;
+
       for (segmentCounter = 0; segmentCounter < segmentsLength; ++segmentCounter) {
 	for (ray.castAngle = heading - FIELD_OF_VIEW / 2, rayCounter = 0; ray.castAngle < heading + FIELD_OF_VIEW / 2; ray.castAngle += dTheta, ++rayCounter) {
 	  Vector intersectionPoint = raySegmentIntersection(segments[segmentCounter], ray);
 	  if (intersectionPoint.x != -1) {
+	    float distanceSquared = VectorDistanceSquared(ray.startPoint, intersectionPoint);
+	    if (shortestDistanceSquared == -1 || distanceSquared < shortestDistanceSquared) shortestDistanceSquared = distanceSquared;
+	  }
+	}
 
-	    Vector ap = VectorSubtract(ray.startPoint, segments[segmentCounter].point1);
-	    Vector ab = VectorSubtract(segments[segmentCounter].point2, segments[segmentCounter].point1);
-	    float perpendicularProjection = VectorCrossProduct(ap, ab) / sqrt(VectorDistanceSquared(segments[segmentCounter].point1, segments[segmentCounter].point2));
-	    float distance = perpendicularProjection >= 0? perpendicularProjection: -perpendicularProjection;
+	for (ray.castAngle = heading - FIELD_OF_VIEW / 2, rayCounter = 0; ray.castAngle < heading + FIELD_OF_VIEW / 2; ray.castAngle += dTheta, ++rayCounter) {
+	  Vector intersectionPoint = raySegmentIntersection(segments[segmentCounter], ray);
+	  if (intersectionPoint.x != -1) {
+	    float distance = sqrt(shortestDistanceSquared);
 	    float heightOfStrip = VISION_PLANE_DISTANCE * WALL_HEIGHT / distance;
 	    float widthOfStrip = WIDTH / NUMBER_OF_RAYS_IN_VISION_CONE;
 
