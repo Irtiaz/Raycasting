@@ -64,22 +64,6 @@ int main(void) {
 
   populateSegments(&segments, &segmentsLength, &segmentsCapacity, tilemap);
 
-  /*
-  {
-    Segment initialSegments[] = {
-      {{10, 10}, {WIDTH - 10, 10}},
-      {{10, 10}, {10, HEIGHT - 10}},
-      {{10, HEIGHT - 10}, {WIDTH - 10, HEIGHT - 10}},
-      {{WIDTH - 10, 10}, {WIDTH - 10, HEIGHT - 10}}
-    };
-
-    int i;
-    for (i = 0; i < sizeof(initialSegments) / sizeof(Segment); ++i) {
-      addSegment(&segments, &segmentsLength, &segmentsCapacity, initialSegments[i]);
-    }
-  }
-  */
-
   while (1) {
     SDL_Event event;
 
@@ -89,7 +73,7 @@ int main(void) {
 	exit = 1;
 	break;
       }
-      else if (event.type == SDL_MOUSEBUTTONDOWN) {
+      else if (event.type == SDL_MOUSEBUTTONDOWN && currentMode2D) {
 	Vector mouse;
 	mouse.x = event.button.x;
 	mouse.y = event.button.y;
@@ -148,7 +132,7 @@ int main(void) {
 	if (VectorDistanceSquared(closestIntersectionPoint, position) > currentMovementSpeed * currentMovementSpeed) position = VectorAdd(position, headingVector);
 	else {
 	  Vector correctionVector = VectorNormalize(headingVector);
-	  correctionVector = VectorMultiply(correctionVector, -10);
+	  correctionVector = VectorMultiply(correctionVector, -TILE_SIZE / 10);
 	  position = VectorAdd(closestIntersectionPoint, correctionVector);
 	}
       }
@@ -158,16 +142,6 @@ int main(void) {
     SDL_RenderClear(renderer);
 
     if (currentMode2D) {
-      /*
-      int i;
-      SDL_SetRenderDrawColor(renderer, 168, 70, 50, 255);
-      for (i = 0; i < segmentsLength; ++i) {
-	Vector point1 = segments[i].point1;
-	Vector point2 = segments[i].point2;
-	SDL_RenderDrawLine(renderer, point1.x - position.x + WIDTH / 2, point1.y - position.y + HEIGHT / 2, point2.x - position.x + WIDTH / 2, point2.y - position.y + HEIGHT / 2);
-      }
-      */
-
       SDL_SetRenderDrawColor(renderer, 0, 137, 255, 255);
       {
 	SDL_Rect wall;
@@ -177,8 +151,8 @@ int main(void) {
 	  int column;
 	  for (column = 0; column < COLUMNS; ++column) {
 	    if (tilemap[row][column] == WALL) {
-	      wall.x = column * TILE_SIZE;
-	      wall.y = row * TILE_SIZE;
+	      wall.x = column * TILE_SIZE - position.x + WIDTH / 2;
+	      wall.y = row * TILE_SIZE - position.y + HEIGHT / 2;
 
 	      SDL_RenderFillRect(renderer, &wall);
 	    }
