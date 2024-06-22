@@ -126,7 +126,7 @@ int main(void) {
       else if (event.type == SDL_KEYUP) {
 	SDL_Keycode keyCode = event.key.keysym.sym;
 	if (keyCode == SDLK_RIGHT || keyCode == SDLK_LEFT || keyCode == SDLK_d || keyCode == SDLK_a) currentAngleChangeSpeed = 0;
-	else if (keyCode == SDLK_UP || keyCode == SDLK_DOWN || keyCode == SDLK_w || keyCode == SDLK_s) currentMovementSpeed = 0;
+	else if (keyCode == SDLK_UP || keyCode == SDLK_w) currentMovementSpeed = 0;
       }
 
       else if (event.type == SDL_MOUSEMOTION) {
